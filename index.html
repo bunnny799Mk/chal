@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hospital Bill System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background: #f5f5f5;
+    }
+    h2 {
+      color: #333;
+    }
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 800px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px 0;
+      width: 100%;
+    }
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+    .row > div {
+      flex: 1;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+    #bill-section {
+      display: none;
+    }
+    .btn {
+      width: auto;
+      cursor: pointer;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    .btn:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Hospital Bill Generator</h2>
+
+  <div id="form-section">
+    <label>Patient Name</label>
+    <input type="text" id="patient-name" required>
+
+    <label>Age</label>
+    <input type="number" id="patient-age" required>
+
+    <label>Date</label>
+    <input type="date" id="bill-date" required>
+
+    <h3>Treatments</h3>
+    <div id="treatment-list">
+      <div class="row">
+        <div><input type="text" placeholder="Treatment" class="treatment-name"></div>
+        <div><input type="number" placeholder="Cost" class="treatment-cost"></div>
+      </div>
+    </div>
+    <button class="btn" onclick="addTreatment()">+ Add More Treatment</button>
+    <br><br>
+    <button class="btn" onclick="generateBill()">Generate Bill</button>
+  </div>
+
+  <div id="bill-section">
+    <h3>Hospital Bill</h3>
+    <p><strong>Patient:</strong> <span id="display-name"></span></p>
+    <p><strong>Age:</strong> <span id="display-age"></span></p>
+    <p><strong>Date:</strong> <span id="display-date"></span></p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Treatment</th>
+          <th>Cost</th>
+        </tr>
+      </thead>
+      <tbody id="bill-body"></tbody>
+      <tfoot>
+        <tr>
+          <th>Total</th>
+          <th id="total-cost">$0.00</th>
+        </tr>
+      </tfoot>
+    </table>
+
+    <br>
+    <button class="btn" onclick="window.print()">Print Bill</button>
+  </div>
+</div>
+
+<script>
+  function addTreatment() {
+    const treatmentList = document.getElementById('treatment-list');
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.innerHTML = `
+      <div><input type="text" placeholder="Treatment" class="treatment-name"></div>
+      <div><input type="number" placeholder="Cost" class="treatment-cost"></div>
+    `;
+    treatmentList.appendChild(row);
+  }
+
+  function generateBill() {
+    const name = document.getElementById('patient-name').value;
+    const age = document.getElementById('patient-age').value;
+    const date = document.getElementById('bill-date').value;
+    const treatmentNames = document.querySelectorAll('.treatment-name');
+    const treatmentCosts = document.querySelectorAll('.treatment-cost');
+
+    if (!name || !age || !date) {
+      alert("Please fill out patient details.");
+      return;
+    }
+
+    let total = 0;
+    const billBody = document.getElementById('bill-body');
+    billBody.innerHTML = ''; // Clear old data
+
+    treatmentNames.forEach((treatment, index) => {
+      const name = treatment.value;
+      const cost = parseFloat(treatmentCosts[index].value) || 0;
+
+      if (name && cost >= 0) {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${name}</td><td>$${cost.toFixed(2)}</td>`;
+        billBody.appendChild(row);
+        total += cost;
+      }
+    });
+
+    document.getElementById('display-name').textContent = name;
+    document.getElementById('display-age').textContent = age;
+    document.getElementById('display-date').textContent = date;
+    document.getElementById('total-cost').textContent = `$${total.toFixed(2)}`;
+
+    document.getElementById('form-section').style.display = 'none';
+    document.getElementById('bill-section').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
